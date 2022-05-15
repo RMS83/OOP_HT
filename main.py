@@ -40,13 +40,11 @@ class Student:
                f'Курсы в процессе изучения: {", ".join(self.courses_in_progress)}\n' \
                f'Завершенные курсы: {", ".join(self.finished_courses)}'
 
-
 class Mentor:
     def __init__(self, name, surname):
         self.name = name
         self.surname = surname
         self.courses_attached = []
-
 
 class Lecturer(Mentor):
     _list_lecturer = []
@@ -74,7 +72,6 @@ class Lecturer(Mentor):
         return f'Имя: {self.name}\nФамилия: {self.surname}' \
                f'\n{self.__average_rating()}'
 
-
 class Reviewer(Mentor):
     def rate_hw(self, student, course, grade):
         if isinstance(student, Student) and course in self.courses_attached and course in student.finished_courses:
@@ -88,9 +85,8 @@ class Reviewer(Mentor):
     def __str__(self):
         return f'Имя: {self.name}\nФамилия: {self.surname}'
 
-
 student = Student('Ruoy', 'Eman', 'your_gender')
-student.finished_courses += ['Введение в программирование', 'Git']
+student.finished_courses += ['Введение в программирование', 'Git', 'Python']
 student.courses_in_progress += ['Python']
 
 student1 = Student('Roy', 'Jons', 'your_gender')
@@ -108,7 +104,7 @@ mentor.rate_hw(student, 'Python', 8)
 mentor.rate_hw(student, 'Введение в программирование', 7)
 mentor.rate_hw(student, 'Введение в программирование', 10)
 
-mentor.rate_hw(student1, 'Python', 9)
+mentor.rate_hw(student1, 'Git', 9)
 mentor.rate_hw(student1, 'Git', 9)
 mentor.rate_hw(student1, 'Введение в программирование', 8)
 
@@ -125,7 +121,7 @@ mentor1 = Lecturer('Kriss', 'Karry')
 mentor1.courses_attached += ['Python', 'Git', 'Введение в программирование']
 student.rate_hw(mentor1, 'Введение в программирование', 10)
 student.rate_hw(mentor1, 'Git', 5)
-student.rate_hw(mentor1, 'Git', 5)
+student.rate_hw(mentor1, 'Python', 5)
 
 mentor2 = Lecturer('Kri', 'Kro')
 mentor2.courses_attached += ['Python', 'Git', 'Введение в программирование']
@@ -140,26 +136,40 @@ print()
 print(mentor1.__lt__(mentor2))
 print()
 
-
 def average_rating_student(students, course):
     rez = 0
+    people = 0
     for student_ in students:
         if course in student_.grades:
+            people += 1 # Средний балл считаем только у студентов которые прошли обучение по курсу
             for score in student_.grades[course]:
                 rez += score
-    return rez
+        else:
+            rez += 0
+    if rez:
+        return rez / people
+    else:
+        return 'Ошибка'
 
+course_ = input('Введите название курса для получения среднего бала студентов: ').capitalize()
+print(f'Средний балл студентов за курс "{course_}": '
+      f'{average_rating_student(Student._list_student, course_)}')
 
 def average_rating_lecturer(lecturers, course):
     rez = 0
+    people = 0
     for lecturer in lecturers:
         if course in lecturer.grades:
+            people += 1
             for score in lecturer.grades[course]:
                 rez += score
-    return rez
+        else:
+            rez += 0
+    if rez:
+        return rez / people
+    else:
+        return 'Ошибка'
 
-
-print(average_rating_student(Student._list_student, 'Git'))
-
-print(average_rating_lecturer(Lecturer._list_lecturer, 'Введение в программирование'))
-
+course_ = input('Введите название курса для получения среднего бала Лекторов: ').capitalize()
+print(f'Средний балл Лекторов за курс "{course_}": '
+      f'{average_rating_lecturer(Lecturer._list_lecturer, course_)}')
